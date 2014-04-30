@@ -2,7 +2,10 @@ import argparse
 from webob import Request
 from webob import Response
 from webob import exc
-from VM_Project import libvirt_vm
+from VM_Project import vm_sql
+from wsgiref.simple_server import make_server
+
+from django.core.wsgi import get_wsgi_application
 from wsgiref.simple_server import make_server
 
 
@@ -10,9 +13,9 @@ class ApiHandler(object):
     def __call__(self, environ, start_response):
         req = Request(environ)
         try:
-            self.myVM = libvirt_vm.VM(name=req.json['name_vm'])
+            self.myVM = vm_sql.VM(name=req.json['name_vm'])
         except KeyError:
-            self.myVM = libvirt_vm.VM()
+            self.myVM = vm_sql.VM()
         meth_name = req.path[1:].replace('/', '_')
         try:
             if hasattr(self, meth_name):
